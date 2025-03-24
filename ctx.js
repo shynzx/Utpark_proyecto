@@ -1,9 +1,8 @@
 import Constants from "expo-constants";
-
-const API_URL = Constants.expoConfig.extra.API_URL || " https://humbly-mighty-buck.ngrok-free.app ";
-
 import { useContext, createContext } from "react";
 import { useStorageState } from "./useStorageState";
+
+const API_URL = Constants.expoConfig.extra.API_URL || "https://humbly-mighty-buck.ngrok-free.app";
 
 const AuthContext = createContext({
   signIn: async () => null,
@@ -27,22 +26,16 @@ export function useSession() {
 export function SessionProvider({ children }) {
   const [[isLoading, session], setSession] = useStorageState("session");
 
-  const signIn = async (email, password) => {
+  const signIn = async (username, password) => {
     try {
-      const response = await fetch(`${API_URL}/login/auth`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Login failed");
+      // Verifica si el nombre de usuario y la contraseña son correctos
+      if (username === "enrique" && password === "123") {
+        // Simula un token de autenticación
+        const fakeToken = "fake-token-123456";
+        setSession(fakeToken); // Guarda el token en el almacenamiento
+      } else {
+        throw new Error("Invalid username or password");
       }
-
-      const data = await response.json();
-      setSession(data.token); // Guarda el token en el almacenamiento
     } catch (error) {
       console.error("Error during sign-in:", error);
     }

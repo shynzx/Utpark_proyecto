@@ -5,9 +5,11 @@ import {
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSession } from "../ctx"; // Asegúrate de importar tu contexto
+import { useRouter } from "expo-router"; // Importa el router
 
 export default function LoginScreen() {
   const { signIn } = useSession();
+  const router = useRouter(); // Hook para navegar
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -19,12 +21,16 @@ export default function LoginScreen() {
     }
 
     setLoading(true);
-    const success = await signIn(email, password);
-    setLoading(false);
 
-    if (!success) {
+    // Simula la validación de credenciales
+    if (email === "enrique" && password === "123") {
+      await signIn(email, password); // Llama a signIn con las credenciales
+      router.push("/"); // Redirige al index
+    } else {
       Alert.alert("Error", "Correo o contraseña incorrectos");
     }
+
+    setLoading(false);
   };
 
   const handleSocialMediaClick = (platform) => {
@@ -40,9 +46,6 @@ export default function LoginScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>UTPark</Text>
-        <TouchableOpacity style={styles.menuButton}>
-          <MaterialCommunityIcons name="menu" size={32} color="#fff" />
-        </TouchableOpacity>
       </View>
 
       <View style={styles.mainContent}>
@@ -85,7 +88,7 @@ export default function LoginScreen() {
 
           <TouchableOpacity>
             <Text style={styles.registerText}>¿Aún no tienes cuenta? Regístrate</Text>
-          </TouchableOpacity>
+          </TouchableOpacity>a
         </View>
       </View>
 
@@ -109,7 +112,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1a0f0f",
+    backgroundColor: "#000000",
   },
   headerContainer: {
     flexDirection: "row",
