@@ -1,19 +1,63 @@
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Animated, Dimensions } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useState, useRef } from 'react';
+
+const SCREEN_WIDTH = Dimensions.get("window").width;
 
 export default function HomeScreen() {
+  const [menuVisible, setMenuVisible] = useState(false);
+  const slideAnim = useRef(new Animated.Value(-SCREEN_WIDTH * 0.7)).current;
+
+  const openMenu = () => {
+    setMenuVisible(true);
+    Animated.timing(slideAnim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const closeMenu = () => {
+    Animated.timing(slideAnim, {
+      toValue: -SCREEN_WIDTH * 0.7,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => setMenuVisible(false));
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
       
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>UTPark</Text>
-        <TouchableOpacity style={styles.menuButton}>
-          <Ionicons name="menu" size={24} color="white" />
+        <TouchableOpacity style={styles.menuButton} onPress={openMenu}>
+          <Ionicons name="menu" size={30} color="white" />
         </TouchableOpacity>
+        <Text style={styles.headerTitle}>UTPark</Text>
       </View>
+
+      {/* Menú lateral */}
+      {menuVisible && (
+        <View style={styles.overlay}>
+          <TouchableOpacity style={styles.overlayBackground} onPress={closeMenu} activeOpacity={1} />
+          <Animated.View style={[styles.menu, { transform: [{ translateX: slideAnim }] }]}>
+          <TouchableOpacity style={styles.menuButton1} onPress={closeMenu}>
+          <Ionicons name="menu" size={30} color="white" />
+        </TouchableOpacity>
+            <TouchableOpacity onPress={() => console.log("Ir a Perfil")}>
+              <Text style={styles.menuItem}>Perfil</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => console.log("Ir a Configuración")}>
+              <Text style={styles.menuItem}>Configuración</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => console.log("Cerrar Sesión")}>
+              <Text style={styles.menuItem}>Cerrar Sesión</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </View>
+      )}
 
       {/* Main Content */}
       <View style={styles.content}>
@@ -37,19 +81,19 @@ export default function HomeScreen() {
       </View>
 
       {/* Footer */}
-    <View style={styles.footer}>
-          <View style={styles.socialMediaContainer}>
-            <TouchableOpacity onPress={() => handleSocialMediaClick("twitter")}>
-              <MaterialCommunityIcons name="twitter" size={24} color="#fff" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleSocialMediaClick("instagram")}>
-              <MaterialCommunityIcons name="instagram" size={24} color="#fff" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleSocialMediaClick("youtube")}>
-              <MaterialCommunityIcons name="youtube" size={24} color="#fff" />
-            </TouchableOpacity>
-          </View>
+      <View style={styles.footer}>
+        <View style={styles.socialMediaContainer}>
+          <TouchableOpacity onPress={() => console.log("Twitter")}>
+            <MaterialCommunityIcons name="twitter" size={24} color="#fff" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => console.log("Instagram")}>
+            <MaterialCommunityIcons name="instagram" size={24} color="#fff" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => console.log("YouTube")}>
+            <MaterialCommunityIcons name="youtube" size={24} color="#fff" />
+          </TouchableOpacity>
         </View>
+      </View>
     </SafeAreaView>
   );
 }
@@ -61,7 +105,7 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     alignItems: "center",
     paddingTop: 30,
     padding: 16,
@@ -70,17 +114,15 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 20,
     fontWeight: 'bold',
-    position: 'absolute',
-
   },
   menuButton: {
     position: 'absolute',
-    right: 16,
+    left: 16,
   },
   content: {
     flex: 1,
     paddingHorizontal: 16,
-    paddingTop: 20,
+    paddingTop: 50,
   },
   parkingTitle: {
     color: 'white',
@@ -142,5 +184,39 @@ const styles = StyleSheet.create({
   socialMediaContainer: {
     flexDirection: "row",
     gap: 16,
+  },
+  /* Estilos del menú */
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    zIndex: 1000, // Asegura que el menú esté por encima de todo
+    flexDirection: 'row',
+  },
+  overlayBackground: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  menu: {
+    position: "absolute",
+    left: 0,
+    width: '70%',
+    height: '100%',
+    backgroundColor: '#222',
+    padding: 20,
+    zIndex: 1001,
+  },
+  menuTitle: {
+    color: 'white',
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  menuItem: {
+    color: 'white',
+    fontSize: 18,
+    paddingVertical: 12,
   },
 });
